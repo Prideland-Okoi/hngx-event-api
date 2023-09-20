@@ -10,8 +10,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     password = models.CharField(max_length=128)
     user_id = models.CharField(max_length=50)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
-    access_token = models.CharField(max_length=255)
-    refresh_token = models.CharField(max_length=255)
+    #access_token = models.CharField(max_length=255)
+    #refresh_token = models.CharField(max_length=255)
   
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = ["username"]
