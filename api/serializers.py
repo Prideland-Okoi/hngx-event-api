@@ -7,18 +7,18 @@ from .models import User, Event, Comment, Image, InterestedEvent, Group, UserGro
 class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'password', 'user_id', 'avatar', 'access_token', 'refresh_token', 'username_field', 'required_fields')
+        fields = ('username', 'password', 'user_id', 'avatar', 'email')
         extra_kwargs = {'password': {'write_only': True}}
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'user_id', 'avatar', 'access_token', 'refresh_token', 'username_field', 'required_fields')
+        fields = ('username', 'user_id', 'avatar', 'email')
 
 class UserProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'avatar', 'access_token', 'refresh_token', 'username_field', 'required_fields')
+        fields = ('username', 'avatar', 'email')
 
 # Event Management Serializers
 class EventCreateSerializer(serializers.ModelSerializer):
