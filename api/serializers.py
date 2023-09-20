@@ -1,23 +1,23 @@
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
-from .models import User, Event, Comment, Image, InterestedEvent, Group, UserGroup
+from .models import EventUser, Event, Comment, Image, InterestedEvent, EventGroup, UserGroup
 
 # User Management Serializers
-class UserRegistrationSerializer(serializers.ModelSerializer):
+class EventUserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = EventUser
         fields = ('username', 'password', 'email')
         extra_kwargs = {'password': {'write_only': True}}
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class EventUserProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = EventUser
         fields = ('username', 'user_id', 'avatar', 'email')
 
-class UserProfileUpdateSerializer(serializers.ModelSerializer):
+class EventUserProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = EventUser
         fields = ('username', 'avatar', 'email')
 
 # Event Management Serializers
@@ -57,23 +57,23 @@ class InterestedEventCreateSerializer(serializers.ModelSerializer):
         model = InterestedEvent
         fields = ('user', 'event')
 
-class GroupCreateSerializer(serializers.ModelSerializer):
+class EventGroupCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Group
+        model = EventGroup
         fields = ('group_name', 'description', 'owner_id')
 
-class GroupDetailSerializer(serializers.ModelSerializer):
+class EventGroupDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Group
+        model = EventGroup
         fields = '__all__'
 
-class GroupUpdateSerializer(serializers.ModelSerializer):
+class EventGroupUpdateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Group
+        model = EventGroup
         fields = ('group_name', 'description')
 
 
-class UserLoginSerializer(serializers.Serializer):
+class EventUserLoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
 
@@ -82,11 +82,11 @@ class UserLoginSerializer(serializers.Serializer):
         password = data.get('password')
 
         if username and password:
-            user = authenticate(username=username, password=password)
+            event_user = authenticate(username=username, password=password)
 
-            if user:
-                if user.is_active:
-                    data['user'] = user
+            if event_user:
+                if event_user.is_active:
+                    data['event_user'] = event_user
                 else:
                     raise serializers.ValidationError('User is not active.')
             else:

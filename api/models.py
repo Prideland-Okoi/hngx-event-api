@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 # Create your models here.
 
 # User Model
-class User(AbstractBaseUser, PermissionsMixin):
+class EventUser(AbstractBaseUser, PermissionsMixin):
     user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
@@ -24,7 +24,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Event(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
-    creator_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    creator_id = models.ForeignKey(EventUser, on_delete=models.CASCADE)
     location = models.CharField(max_length=255)
     start_date = models.DateField()
     end_date = models.DateField()
@@ -42,11 +42,11 @@ class Event(models.Model):
 # Comment Model
 class Comment(models.Model):
     body = models.TextField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    event_user = models.ForeignKey(EventUser, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'Comment by {self.user.username} on {self.event.title}'
+        return f'Comment by {self.event_user.username} on {self.event.title}'
 
 # Image Model
 class Image(models.Model):
@@ -59,18 +59,18 @@ class Image(models.Model):
 
 # InterestedEvent Model
 class InterestedEvent(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    event_user = models.ForeignKey(EventUser, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.user.username} is interested in {self.event.title}'
+        return f'{self.event_user.username} is interested in {self.event.title}'
 
 # Group Model
-class Group(models.Model):
+class EventGroup(models.Model):
     group_id = models.AutoField(primary_key=True)
     group_name = models.CharField(max_length=100)
     description = models.TextField()
-    owner_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner_id = models.ForeignKey(EventUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -78,9 +78,9 @@ class Group(models.Model):
 
 # UserGroup Model
 class UserGroup(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    event_user = models.ForeignKey(EventUser, on_delete=models.CASCADE)
+    event_group = models.ForeignKey(EventGroup, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.user.username} is a member of {self.group.group_name}'
+        return f'{self.user.username} is a member of {self.event_group.group_name}'
 

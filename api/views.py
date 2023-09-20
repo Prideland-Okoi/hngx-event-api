@@ -1,42 +1,44 @@
 #from django.shortcuts import render
-from rest_framework import generics, status
+from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from .models import User, Event, Comment, Image, InterestedEvent, Group, UserGroup
+from .models import EventUser, Event, Comment, Image, InterestedEvent, EventGroup, UserGroup
 
-from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer, UserProfileUpdateSerializer
-from . import serializers
+from .serializers import EventUserRegistrationSerializer, EventUserLoginSerializer, EventUserProfileSerializer, EventUserProfileUpdateSerializer
+from .serializers import EventCreateSerializer, EventListSerializer, EventDetailSerializer, EventUpdateSerializer
+from .serializers import CommentCreateSerializer, ImageListSerializer, InterestedEventCreateSerializer
+from .serializers import EventGroupCreateSerializer, EventGroupDetailSerializer, EventGroupUpdateSerializer
 
 # Create your views here.
 
 # User Management Views
-class UserRegistrationView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserRegistrationSerializer
+class EventUserRegistrationView(generics.CreateAPIView):
+    queryset = EventUser.objects.all()
+    serializer_class = EventUserRegistrationSerializer
 
-class UserLoginView(generics.CreateAPIView):
-    serializer_class = UserLoginSerializer
+class EventUserLoginView(generics.CreateAPIView):
+    serializer_class = EventUserLoginSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        user = serializer.validated_data['user']
-        token, _ = Token.objects.get_or_create(user=user)
+        event_user = serializer.validated_data['event_user']
+        token, _ = Token.objects.get_or_create(event_user=event_user)
 
         return Response({'token': token.key}, status=status.HTTP_200_OK)
 
-class UserProfileView(generics.RetrieveAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserProfileSerializer
+class EventUserProfileView(generics.RetrieveAPIView):
+    queryset = EventUser.objects.all()
+    serializer_class = EventUserProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
         return self.request.user
 
-class UserProfileUpdateView(generics.UpdateAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserProfileUpdateSerializer
+class EventUserProfileUpdateView(generics.UpdateAPIView):
+    queryset = EventUser.objects.all()
+    serializer_class = EventUserProfileUpdateSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
@@ -78,24 +80,24 @@ class InterestedEventCreateView(generics.CreateAPIView):
 class InterestedEventDeleteView(generics.DestroyAPIView):
     queryset = InterestedEvent.objects.all()
 
-class GroupCreateView(generics.CreateAPIView):
-    queryset = Group.objects.all()
-    serializer_class = GroupCreateSerializer
+class EventGroupCreateView(generics.CreateAPIView):
+    queryset = EventGroup.objects.all()
+    serializer_class = EventGroupCreateSerializer
 
-class GroupDetailView(generics.RetrieveAPIView):
-    queryset = Group.objects.all()
-    serializer_class = GroupDetailSerializer
+class EventGroupDetailView(generics.RetrieveAPIView):
+    queryset = EventGroup.objects.all()
+    serializer_class = EventGroupDetailSerializer
 
-class GroupUpdateView(generics.UpdateAPIView):
-    queryset = Group.objects.all()
-    serializer_class = GroupUpdateSerializer
+class EventGroupUpdateView(generics.UpdateAPIView):
+    queryset = EventGroup.objects.all()
+    serializer_class = EventGroupUpdateSerializer
 
-class GroupDeleteView(generics.DestroyAPIView):
-    queryset = Group.objects.all()
+class EventGroupDeleteView(generics.DestroyAPIView):
+    queryset = EventGroup.objects.all()
 
 # Group Add Member View
-class GroupAddMemberView(generics.CreateAPIView):
-    queryset = Group.objects.all()
+class EventGroupAddMemberView(generics.CreateAPIView):
+    queryset = EventGroup.objects.all()
 
     def create(self, request, *args, **kwargs):
         # Get the group_id and user_id from the URL parameters
@@ -103,17 +105,17 @@ class GroupAddMemberView(generics.CreateAPIView):
         user_id = kwargs.get('userId')
 
         try:
-            group = Group.objects.get(pk=group_id)
-        except Group.DoesNotExist:
+            event_group = EventGroup.objects.get(pk=group_id)
+        except EventGroup.DoesNotExist:
             return Response({'message': 'Group not found'}, status=status.HTTP_404_NOT_FOUND)
 
         try:
-            user = User.objects.get(pk=user_id)
-        except User.DoesNotExist:
+            event_user = EventUser.objects.get(pk=user_id)
+        except EventUser.DoesNotExist:
             return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
         # Check if the user is already a member of the group
-        if UserGroup.objects.filter(group=group, user=user).exists():
+        if UserGroup.objects.filter(event_group=event_group, event_user=event_user).exists():
             return Response({'message': 'User is already a member of the group'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Add the user to the group
@@ -123,8 +125,8 @@ class GroupAddMemberView(generics.CreateAPIView):
         return Response({'message': 'User added to the group successfully'}, status=status.HTTP_201_CREATED)
 
 # Group Remove Member View
-class GroupRemoveMemberView(generics.DestroyAPIView):
-    queryset = Group.objects.all()
+class EventGroupRemoveMemberView(generics.DestroyAPIView):
+    queryset = EventGroup.objects.all()
 
     def destroy(self, request, *args, **kwargs):
         # Get the group_id and user_id from the URL parameters
@@ -132,13 +134,13 @@ class GroupRemoveMemberView(generics.DestroyAPIView):
         user_id = kwargs.get('userId')
 
         try:
-            group = Group.objects.get(pk=group_id)
-        except Group.DoesNotExist:
+            event_group = EventGroup.objects.get(pk=group_id)
+        except EventGroup.DoesNotExist:
             return Response({'message': 'Group not found'}, status=status.HTTP_404_NOT_FOUND)
 
         try:
-            user = User.objects.get(pk=user_id)
-        except User.DoesNotExist:
+            event_user = EventUser.objects.get(pk=user_id)
+        except EventUser.DoesNotExist:
             return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
         # Check if the user is a member of the group
