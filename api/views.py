@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from .models import User, Event, Comment, Image, InterestedEvent, Group, UserGroup
 
-from .serializers import UserLoginSerializer
-
+from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer, UserProfileUpdateSerializer
+from .import serializers
 
 # Create your views here.
 
