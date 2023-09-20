@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 from .models import User, Event, Comment, Image, InterestedEvent, Group, UserGroup
 
 from .serializers import UserRegistrationSerializer, UserLoginSerializer, UserProfileSerializer, UserProfileUpdateSerializer
-from .import serializers
+from . import serializers
 
 # Create your views here.
 
