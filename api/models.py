@@ -6,9 +6,10 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 
 # User Model
 class User(AbstractBaseUser, PermissionsMixin):
+    user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=50)
+    email = models.EmailField(unique=True)
     password = models.CharField(max_length=128)
-    user_id = models.CharField(max_length=50)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
     #access_token = models.CharField(max_length=255)
     #refresh_token = models.CharField(max_length=255)
